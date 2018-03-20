@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+TARGET="192.168.5.6"
+PORT=7000
+BYTES=$1
+BLOCKS=$2
+
+CURRENT_BLOCK=0
+
+while [ $CURRENT_BLOCK -lt $BYTES ];
+do
+	CURRENT_BLOCK=`expr $CURRENT_BLOCK + $BLOCKS`
+	echo `head -c $CURRENT_BLOCK </dev/urandom` | nc $TARGET $PORT
+done;
