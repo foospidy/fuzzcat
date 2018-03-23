@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
+#
+#  Script     : fuzzcat
+#  Author     : foospdy
+#  License    : See LICENSE file.
+#  Description: Rudimentary network protocol fuzzer using bash, netcat, and other tools.
+#
 
 HOST="localhost"
 PORT=80

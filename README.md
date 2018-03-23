@@ -14,6 +14,11 @@ Example:
 
 `./fuzzcat -h 127.0.0.1 -p 8080 -b 4096 -bz 256 -t char`
 
+### Dependencies
+
+- nc
+- curl
+
 ### Better Fuzzing Tools
 
 - https://github.com/secfigo/Awesome-Fuzzing
