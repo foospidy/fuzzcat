@@ -1,14 +1,98 @@
 #!/usr/bin/env bash
 
-TARGET="192.168.5.6"
-PORT=7000
-BYTES=$1
-BLOCKS=$2
-
+HOST="localhost"
+PORT=80
+BYTES=1024
+BLOCKS=256
+PROTOCOL="tcp"
+TYPE="char"
+SERVICE=""
 CURRENT_BLOCK=0
 
+while [[ $# -gt 0 ]];
+do
+	key="$1"
+	case $key in
+		--help)
+		echo "OPTIONS:"
+		echo "-h|--host	The target host, e.g. 127.0.0.1."
+		echo "-p|--port	The target port, e.g. 8080."
+		echo "-b|--bytes	Max payload size in bytes, e.g. 2048."
+		echo "-bz|--blocksize	Number of bytes to increment each payload iteration with, e.g. 512."
+		echo "-s|--service	A specific service to craft payloads for: [ http | none (default) ]."
+		echo "-u|--udp	Connect and send payloads using UDP."
+		echo "-t|--type	The type of payload: [ char | random data (default) ]."
+		exit
+		;;
+		-h|--host)
+		HOST="$2"
+		shift # past arg
+		shift # past val
+		;;
+		-p|--port)
+		PORT="$2"
+		shift
+		shift
+		;;
+		-b|--bytes)
+		BYTES="$2"
+		shift
+		shift
+		;;
+		-bz|--blocksize)
+		BLOCKS="$2"
+		shift
+		shift
+		;;
+		-s|--service)
+		SERVICE="$2"
+		shift
+		shift
+		;;
+		-u|--udp)
+		PROTOCOL="udp"
+		shift
+		;;
+		-t|--type)
+		TYPE="$2"
+		shift
+		shift
+		;;
+		*)
+		shift
+		;;
+	esac
+done;
+
+echo "Fuzzing $HOST on port $PORT (bytes: $BYTES, blocks: $BLOCKS, $PROTOCOL)..."
 while [ $CURRENT_BLOCK -lt $BYTES ];
 do
-	CURRENT_BLOCK=`expr $CURRENT_BLOCK + $BLOCKS`
-	echo `head -c $CURRENT_BLOCK </dev/urandom` | nc $TARGET $PORT
+	CURRENT_BLOCK=`expr $CURRENT_BLOCK + $BLOCKS`	
+	udp_option=""
+
+	if [ "$PROTOCOL" = "udp" ];
+	then
+		udp_option="-u -w1"
+	fi
+
+	echo -ne "Progress... $CURRENT_BLOCK of $BYTES\r"
+
+	case $SERVICE in
+		http)
+			data=`seq -s "A" $CURRENT_BLOCK | sed -e 's/[0-9]//g'`
+
+			curl -s -X $data $HOST:$PORT/$data > /dev/null
+			;;
+		*)
+		    if [ "$TYPE" = "char" ];
+			then
+				seq -s "A" $CURRENT_BLOCK | sed -e 's/[0-9]//g' | nc $udp_option $HOST $PORT > /dev/null
+
+			else
+				echo `head -c $CURRENT_BLOCK </dev/urandom` | nc $udp_option $HOST $PORT > /dev/null
+			fi
+			;;
+	esac
 done;
+
+echo -e "\nDone!"
