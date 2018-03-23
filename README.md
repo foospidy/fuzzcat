@@ -24,3 +24,4 @@ Example:
 - https://github.com/secfigo/Awesome-Fuzzing
 - https://www.owasp.org/index.php/Fuzzing
 - https://blackarch.org/fuzzer.html
+- https://github.com/orgcandman/Simple-Fuzzer
