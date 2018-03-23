@@ -18,6 +18,7 @@ Example:
 
 - nc
 - curl
+- seq
 
 ### Better Fuzzing Tools
 
