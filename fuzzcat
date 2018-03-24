@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 #  Script     : fuzzcat
-#  Author     : foospdy
+#  Author     : foospidy
 #  License    : See LICENSE file.
 #  Description: Rudimentary network protocol fuzzer using bash, netcat, and other tools.
 #
